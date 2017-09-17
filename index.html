@@ -21,8 +21,10 @@
     <div id="map"></div>
     <script type="text/javascript" src="display_images.js"></script>
     <script type="text/javascript" src="parse_json.js"></script>
+    <script type="text/javascript" src="wwang_viewbox.js"></script>
     <script>
       var map;
+      var markerList = [];
       var UpdateStateEnum = {
         OFF: 0,
         FLAG_RAISE: 1,
@@ -30,55 +32,27 @@
       }
 
       var updateStateEnum = UpdateStateEnum.OFF;
-      var lngMarginStandardize = function(lngMargin) {
-        return (lngMargin < 0)? 360 + lngMargin : lngMargin;
-      };
-
-      var centerLngStandardize = function(centerLng) {
-        if (centerLng < -180) {
-          while (centerLng < -180) {
-            centerLng += 360;
-          }
-        } else if (centerLng > 180) {
-          while (centerLng > 180) {
-            centerLng -= 360;
-          }
-        }
-        return centerLng;
-      };
-
-      var getViewAreaRadius = function(m) {
-        // get Latitude and Longitude for view block center
-        var centerLat = map.getCenter().lat();
-        var centerLng = centerLngStandardize(map.getCenter().lng());
-        
-        // get for view bloc boundry
-        var viewBlockBounds = map.getBounds();
-        var neLat = viewBlockBounds.getNorthEast().lat();
-        // var neLng = viewBlockBounds.getNorthEast().lng();
-        var swLat = viewBlockBounds.getSouthWest().lat();
-        var swLng = viewBlockBounds.getSouthWest().lng();
-
-        // when in the south pole, down small up big
-        // when in the north pole, down big up small
-        var downMargin = centerLat - swLat;
-        var upMargin = neLat - centerLat;
-
-        // left and right are the same, but be careful for the negative values
-        var marginLeft = lngMarginStandardize(centerLng-swLng)
-        // var marginRight = lngMarginStandardize(neLng-centerLng);
-        // console.log(marginLeft, downMargin, upMargin);
-        console.log(neLat, swLat);
-
-        return Math.max(marginLeft, Math.max(downMargin, upMargin));
-      };
 
       var updateView = function() {
         window.setTimeout(function() {
           if (updateStateEnum === UpdateStateEnum.FLAG_RAISE) {
             updateStateEnum = UpdateStateEnum.FUNC_RUN;
-            // var radius = getViewAreaRadius(map);
-            // console.log(radius);
+
+            // Where the view should get updated
+            // console.log(getViewAreaRadius(map));
+            if (getViewAreaRadius(map) < 1000) {
+              console.log(markerList);
+              for (var i = 0; i < markerList.length; i++){
+                markerList[i].setMap(null);
+              }
+              markerList = [];
+
+              var centerList = getCenterList(map, 10);
+              centerList.forEach(function(cood) {
+                var placeList = getPlaceList(cood[0], cood[1]);
+                addImages(placeList, map, markerList, 1);
+              });
+            }
             updateStateEnum = UpdateStateEnum.OFF;
           }
         }, 1000);
@@ -86,7 +60,7 @@
 
       function initMap() {
         // Hardcode
-        var places = [
+        /*var places = [
         {
           position: new google.maps.LatLng(-33.91721, 151.22630),
           image_url: "https://maps.gstatic.com/mapfiles/place_api/icons/generic_business-71.png",
@@ -182,13 +156,14 @@
           image_url: "https://maps.gstatic.com/mapfiles/place_api/icons/generic_business-71.png",
           other_info: {}
         }
-        ];
-
+        ];*/
         map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 4,
-          center: new google.maps.LatLng(-33.91722, 151.23064)
+          zoom: 8,
+          // center: new google.maps.LatLng(-33.91722, 151.23064), // Sydney
+          // center: new google.maps.LatLng(42.358450, -71.096242), // MIT
+          center: new google.maps.LatLng(43.508406, 16.439682), // Split
         });
-        console.log(map);
+        // console.log(map);
 
         function getJSON(url) {
           var Httpreq = new XMLHttpRequest(); // a new request
@@ -211,10 +186,10 @@
           }
         });
 
-        var nearby_url = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=new+york+city+point+of+interest&language=en&key=AIzaSyBWY8fwS1LqhBMdnul1rMfUU-sAPUPREhM';
-        console.log(getImageArray(getJSON(nearby_url), 20, 'AIzaSyBWY8fwS1LqhBMdnul1rMfUU-sAPUPREhM'));
+        // var nearby_url = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=new+york+city+point+of+interest&language=en&key=AIzaSyBWY8fwS1LqhBMdnul1rMfUU-sAPUPREhM';
+        // console.log(getImageArray(getJSON(nearby_url), 20, 'AIzaSyBWY8fwS1LqhBMdnul1rMfUU-sAPUPREhM'));
         
-        add_image_markers(places, map);
+        // add_image_markers(places, map);
       }
     </script>
     <script async defer
