@@ -54,6 +54,21 @@
               });
             }
             updateStateEnum = UpdateStateEnum.OFF;
+            markerList.forEach(function(marker) {
+              google.maps.event.addListener(marker, 'click', function() {
+                var myWindow = window.open("", "_blank");
+                myWindow.document.write("<head><title>" + marker.title + "</title></head>");
+                myWindow.document.write("<h2><center><b>" + marker.title + "</b></center></h2><p>");
+                myWindow.document.write("<center><img src=" + marker.url + "></center>");
+                myWindow.document.write("<big><b>Figure Source:</big></b>" + marker.url + "<p>");
+                myWindow.focus();
+                
+                /*
+                var myWindow = window.open(marker.url, "_blank");
+                myWindow.focus();
+                */
+              });
+            });
           }
         }, 1000);
       };

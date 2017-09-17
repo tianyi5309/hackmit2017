@@ -108,6 +108,14 @@ var getPlaceList = function(centerLat, centerLng) {
   return placeList;
 };
 
+var getImageUrl = function(max_width, photo_reference) {
+  url = "https://maps.googleapis.com/maps/api/place/photo?key=AIzaSyCCVvBb0A_6MeuNwTWGoVlEVb39gzWy1sY&photoreference=";
+  url += photo_reference;
+  url += "&maxwidth=";
+  url += max_width;
+  return url;
+}
+
 function addImages(places, map, markerList, numPer) {
   var BreakException = {};
 
@@ -118,7 +126,9 @@ function addImages(places, map, markerList, numPer) {
       if (place.hasOwnProperty('photos')) {
         var marker = new google.maps.Marker({
           position: place.geometry.location,
-          icon: url + place.photos[0].photo_reference,
+          icon: getImageUrl(70, place.photos[0].photo_reference),
+          url: getImageUrl(400, place.photos[0].photo_reference),
+          title: place.name,
           map: map
         });
         markerList.push(marker);
