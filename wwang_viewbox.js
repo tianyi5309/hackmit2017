@@ -103,30 +103,67 @@ var getPlaceList = function(centerLat, centerLng) {
   for (var i = 0; i < locList.length; i++) {
     placeList.push(locList[i]);
   }
-  console.log(placeList);
+  //console.log(placeList);
 
   return placeList;
 };
+
+var getImageUrl = function(max_width, photo_reference) {
+  url = "https://maps.googleapis.com/maps/api/place/photo?key=AIzaSyCCVvBb0A_6MeuNwTWGoVlEVb39gzWy1sY&photoreference=";
+  url += photo_reference;
+  url += "&maxwidth=";
+  url += max_width;
+  return url;
+}
+
+var getPlaceDetails = function(map, place) {
+  var request = {
+    placeId: place.id
+  };
+
+  service = new google.maps.places.PlacesService(map);
+  place_result = service.getDetails(request, callback);
+  //console.log(place_result);
+  return place_result;
+}
+
+function createMarker(place, place_result, map) {
+  var marker = new google.maps.Marker({
+    position: place.geometry.location,
+    icon: getImageUrl(70, place.photos[0].photo_reference),
+    url: getImageUrl(400, place.photos[0].photo_reference),
+    title: place.name,
+    address: place_result[0].formatted_address,
+    hours: place_result[0].opening_hours.weekday_text,
+    rating: places_result[0].rating,
+    map: map
+  });
+  return marker;
+}
 
 function addImages(places, map, markerList, numPer) {
   var BreakException = {};
 
   var iconCount = 0;
-  url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=70&key=AIzaSyCCVvBb0A_6MeuNwTWGoVlEVb39gzWy1sY&photoreference="
   try {
     places.forEach(function(place) {
       if (place.hasOwnProperty('photos')) {
-        var marker = new google.maps.Marker({
-          position: place.geometry.location,
-          icon: url + place.photos[0].photo_reference,
-          map: map
+        console.log(place.id);
+        var request = {
+          placeId: place.id
+        };
+        service = new google.maps.places.PlacesService(map);
+        service.getDetails(request, function(place_result, status) {
+          console.log(status);
+          if (status == google.maps.places.PlacesServiceStatus.OK) {
+            console.log(place_result);
+            markerList.push(createMarker(place, place_result, map));
+            iconCount++;
+            if (iconCount > numPer) {
+              throw BreakException;
+            }
+          }
         });
-        markerList.push(marker);
-
-        iconCount++;
-        if (iconCount > numPer) {
-          throw BreakException;
-        }
       }
     });
   } catch (e) {
