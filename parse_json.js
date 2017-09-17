@@ -1,8 +1,6 @@
 // Created by Joy (09/16/2017)
 
-export { getPhotoArray, hashToUrlParams };
-
-function parsePhoto(photo, position, api_key) {
+function parsePhoto(photo, max_width, api_key) {
   var photo_reference = photo['photo_reference'];
   var hash = {
     'maxwidth': max_width,
@@ -27,6 +25,15 @@ function hashToUrlParams(hash) {
   return str.slice(0, -1);
 }
 
-function getPhotoArray(json) {
-  var results = json['results'];
+function getImageArray(json, max_width, api_key) {
+  var results = [];
+  json['results'].forEach(function(addr) {
+    addr['photos'].forEach(function(photo) {
+      var img_info = {};
+      img_info['position'] = parsePosition(addr['geometry']);
+      img_info['image_url'] = parsePhoto(photo, max_width, api_key); 
+      results.push(img_info);
+    });
+  });
+  return results;
 }
