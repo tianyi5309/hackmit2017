@@ -40,14 +40,14 @@
 
             // Where the view should get updated
             // console.log(getViewAreaRadius(map));
-            if (getViewAreaRadius(map) < 1000) {
+            if (getViewAreaRadius(map) < 2000) {
               console.log(markerList);
               for (var i = 0; i < markerList.length; i++){
                 markerList[i].setMap(null);
               }
               markerList = [];
 
-              var centerList = getCenterList(map, 10);
+              var centerList = getCenterList(map, 5);
               centerList.forEach(function(cood) {
                 var placeList = getPlaceList(cood[0], cood[1]);
                 addImages(placeList, map, markerList, 1);
@@ -160,8 +160,8 @@
         map = new google.maps.Map(document.getElementById('map'), {
           zoom: 8,
           // center: new google.maps.LatLng(-33.91722, 151.23064), // Sydney
-          // center: new google.maps.LatLng(42.358450, -71.096242), // MIT
-          center: new google.maps.LatLng(43.508406, 16.439682), // Split
+          center: new google.maps.LatLng(42.358450, -71.096242), // MIT
+          // center: new google.maps.LatLng(43.508406, 16.439682), // Split
         });
         // console.log(map);
 
@@ -186,14 +186,14 @@
           }
         });
 
-        // var nearby_url = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=new+york+city+point+of+interest&language=en&key=AIzaSyBWY8fwS1LqhBMdnul1rMfUU-sAPUPREhM';
-        // console.log(getImageArray(getJSON(nearby_url), 20, 'AIzaSyBWY8fwS1LqhBMdnul1rMfUU-sAPUPREhM'));
+        // var nearby_url = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=new+york+city+point+of+interest&language=en&key=APIKEY';
+        // console.log(getImageArray(getJSON(nearby_url), 20, 'APIKEY'));
         
         // add_image_markers(places, map);
       }
     </script>
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBWY8fwS1LqhBMdnul1rMfUU-sAPUPREhM&callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCCVvBb0A_6MeuNwTWGoVlEVb39gzWy1sY&callback=initMap">
     </script>
   </body>
 </html>

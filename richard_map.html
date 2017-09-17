@@ -134,14 +134,14 @@
           return JSON.parse(Httpreq.responseText);
         }
 
-        var nearby_url = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=new+york+city+point+of+interest&language=en&key=AIzaSyBWY8fwS1LqhBMdnul1rMfUU-sAPUPREhM';
-        console.log(getImageArray(getJSON(nearby_url), 20, 'AIzaSyBWY8fwS1LqhBMdnul1rMfUU-sAPUPREhM'));
+        var nearby_url = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=new+york+city+point+of+interest&language=en&key=APIKEY';
+        console.log(getImageArray(getJSON(nearby_url), 20, 'APIKEY'));
         
         add_image_markers(places, map);
       }
     </script>
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBWY8fwS1LqhBMdnul1rMfUU-sAPUPREhM&callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key=APIKEY&callback=initMap">
     </script>
   </body>
 </html>

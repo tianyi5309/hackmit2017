@@ -46,8 +46,16 @@ var getViewHoriKm = function(centerLat, marginLeft) {
   return Math.cos(centerLat * (Math.PI / 180)) * 40075 * marginLeft * 2 / 360;
 };
 
+// function randBm() {
+//     var u = Math.random(), v = Math.random();
+//     while(u === 0) u = Math.random();
+//     while(v === 0) v = Math.random();
+//     return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+// }
+
 var getLatRan = function(l, u) {
   return Math.random() * (u - l) + l;
+  // return randBm() * (u - l) + l;
 };
 
 var getLngRan = function(l, u) {
@@ -63,18 +71,8 @@ var getLngRan = function(l, u) {
   return Math.random() * (u - l) + l;
 };
 
-// var centralize(neLat, neLng, swLat, swLng) {
-  
-//   return {
-//     neLat: neLat,
-//     neLng: neLng,
-//     swLat: swLat,
-//     swLng: swLng,
-//   };
-// }
-
 var getCenterList = function(m, num) {
-  var centerList = [];
+  var centerList = [[m.getCenter().lat(), centerLngStandardize(m.getCenter().lng())]];
 
   var viewBlockBounds = m.getBounds();
   var neLat = viewBlockBounds.getNorthEast().lat();
@@ -98,7 +96,7 @@ var getPlaceList = function(centerLat, centerLng) {
   // console.log(centerLat, centerLng);
   url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?";
   url += "location=" + centerLat + "," + centerLng;
-  url += "&radius=50000&type=point_of_interest&key=AIzaSyBWY8fwS1LqhBMdnul1rMfUU-sAPUPREhM&rankby=prominence";
+  url += "&radius=50000&type=point_of_interest&key=AIzaSyCCVvBb0A_6MeuNwTWGoVlEVb39gzWy1sY&rankby=prominence";
 
   var placeList = [];
   var locList = getJSON(url)["results"];
@@ -114,7 +112,7 @@ function addImages(places, map, markerList, numPer) {
   var BreakException = {};
 
   var iconCount = 0;
-  url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=70&key=AIzaSyBWY8fwS1LqhBMdnul1rMfUU-sAPUPREhM&photoreference="
+  url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=70&key=AIzaSyCCVvBb0A_6MeuNwTWGoVlEVb39gzWy1sY&photoreference="
   try {
     places.forEach(function(place) {
       if (place.hasOwnProperty('photos')) {
