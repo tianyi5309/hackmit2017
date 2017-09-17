@@ -1,0 +1,224 @@
+<!-- DEMO FOR DISPLAY_IMAGES, NOT FINAL APPLICATION -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script type="text/javascript" src="display_images.js"></script>
+    <script type="text/javascript" src="parse_json.js"></script>
+    <script>
+      var map;
+      var UpdateStateEnum = {
+        OFF: 0,
+        FLAG_RAISE: 1,
+        FUNC_RUN: 2,
+      }
+
+      var updateStateEnum = UpdateStateEnum.OFF;
+      var lngMarginStandardize = function(lngMargin) {
+        return (lngMargin < 0)? 360 + lngMargin : lngMargin;
+      };
+
+      var centerLngStandardize = function(centerLng) {
+        if (centerLng < -180) {
+          while (centerLng < -180) {
+            centerLng += 360;
+          }
+        } else if (centerLng > 180) {
+          while (centerLng > 180) {
+            centerLng -= 360;
+          }
+        }
+        return centerLng;
+      };
+
+      var getViewAreaRadius = function(m) {
+        // get Latitude and Longitude for view block center
+        var centerLat = map.getCenter().lat();
+        var centerLng = centerLngStandardize(map.getCenter().lng());
+        
+        // get for view bloc boundry
+        var viewBlockBounds = map.getBounds();
+        var neLat = viewBlockBounds.getNorthEast().lat();
+        // var neLng = viewBlockBounds.getNorthEast().lng();
+        var swLat = viewBlockBounds.getSouthWest().lat();
+        var swLng = viewBlockBounds.getSouthWest().lng();
+
+        // when in the south pole, down small up big
+        // when in the north pole, down big up small
+        var downMargin = centerLat - swLat;
+        var upMargin = neLat - centerLat;
+
+        // left and right are the same, but be careful for the negative values
+        var marginLeft = lngMarginStandardize(centerLng-swLng)
+        // var marginRight = lngMarginStandardize(neLng-centerLng);
+        // console.log(marginLeft, downMargin, upMargin);
+        console.log(neLat, swLat);
+
+        return Math.max(marginLeft, Math.max(downMargin, upMargin));
+      };
+
+      var updateView = function() {
+        window.setTimeout(function() {
+          if (updateStateEnum === UpdateStateEnum.FLAG_RAISE) {
+            updateStateEnum = UpdateStateEnum.FUNC_RUN;
+            // var radius = getViewAreaRadius(map);
+            // console.log(radius);
+            updateStateEnum = UpdateStateEnum.OFF;
+          }
+        }, 1000);
+      };
+
+      function initMap() {
+        // Hardcode
+        var places = [
+        {
+          position: new google.maps.LatLng(-33.91721, 151.22630),
+          image_url: "https://maps.gstatic.com/mapfiles/place_api/icons/generic_business-71.png",
+          other_info: {}
+        },
+        {
+          position: new google.maps.LatLng(-33.91539, 151.22820),
+          image_url: "https://maps.gstatic.com/mapfiles/place_api/icons/museum-71.png",
+          other_info: {}
+        },
+        {
+          position: new google.maps.LatLng(-33.91747, 151.22912),
+          image_url: "https://maps.gstatic.com/mapfiles/place_api/icons/museum-71.png",
+          other_info: {}
+        },
+        {
+          position: new google.maps.LatLng(-33.91910, 151.22907),
+          image_url: "https://maps.gstatic.com/mapfiles/place_api/icons/generic_recreational-71.png",
+          other_info: {}
+        },
+        {
+          position: new google.maps.LatLng(-33.91725, 151.23011),
+          image_url: "https://maps.gstatic.com/mapfiles/place_api/icons/generic_business-71.png",
+          other_info: {}
+        },
+        {
+          position: new google.maps.LatLng(-33.91872, 151.23089),
+          image_url: "https://maps.gstatic.com/mapfiles/place_api/icons/generic_recreational-71.png",
+          other_info: {}
+        },
+        {
+          position: new google.maps.LatLng(-33.91784, 151.23094),
+          image_url: "https://maps.gstatic.com/mapfiles/place_api/icons/generic_recreational-71.png",
+          other_info: {}
+        },
+        {
+          position: new google.maps.LatLng(-33.91682, 151.23149),
+          image_url: "https://maps.gstatic.com/mapfiles/place_api/icons/generic_business-71.png",
+          other_info: {}
+        },
+        {
+          position: new google.maps.LatLng(-33.91790, 151.23463),
+          image_url: "https://maps.gstatic.com/mapfiles/place_api/icons/worship_general-71.png",
+          other_info: {}
+        },
+        {
+          position: new google.maps.LatLng(-33.91666, 151.23468),
+          image_url: "https://maps.gstatic.com/mapfiles/place_api/icons/generic_business-71.png",
+          other_info: {}
+        },
+        {
+          position: new google.maps.LatLng(-33.916988, 151.233640),
+          image_url: "https://maps.gstatic.com/mapfiles/place_api/icons/generic_business-71.png",
+          other_info: {}
+        },
+        {
+          position: new google.maps.LatLng(-33.91662347903106, 151.22879464019775),
+          image_url: "https://maps.gstatic.com/mapfiles/place_api/icons/generic_recreational-71.png",
+          other_info: {}
+        },
+        {
+          position: new google.maps.LatLng(-33.916365282092855, 151.22937399734496),
+          image_url: "https://maps.gstatic.com/mapfiles/place_api/icons/generic_business-71.png",
+          other_info: {}
+        },
+        {
+          position: new google.maps.LatLng(-33.91665018901448, 151.2282474695587),
+          image_url: "https://maps.gstatic.com/mapfiles/place_api/icons/generic_business-71.png",
+          other_info: {}
+        },
+        {
+          position: new google.maps.LatLng(-33.919543720969806, 151.23112279762267),
+          image_url: "https://maps.gstatic.com/mapfiles/place_api/icons/generic_recreational-71.png",
+          other_info: {}
+        },
+        {
+          position: new google.maps.LatLng(-33.91608037421864, 151.23288232673644),
+          image_url: "https://maps.gstatic.com/mapfiles/place_api/icons/generic_recreational-71.png",
+          other_info: {}
+        },
+        {
+          position: new google.maps.LatLng(-33.91851096391805, 151.2344058214569),
+          image_url: "https://maps.gstatic.com/mapfiles/place_api/icons/museum-71.png",
+          other_info: {}
+        },
+        {
+          position: new google.maps.LatLng(-33.91818154739766, 151.2346203981781),
+          image_url: "https://maps.gstatic.com/mapfiles/place_api/icons/generic_recreational-71.png",
+          other_info: {}
+        },
+        {
+          position: new google.maps.LatLng(-33.91727341958453, 151.23348314155578),
+          image_url: "https://maps.gstatic.com/mapfiles/place_api/icons/generic_business-71.png",
+          other_info: {}
+        }
+        ];
+
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 4,
+          center: new google.maps.LatLng(-33.91722, 151.23064)
+        });
+        console.log(map);
+
+        function getJSON(url) {
+          var Httpreq = new XMLHttpRequest(); // a new request
+          Httpreq.open("GET", url, false);
+          Httpreq.send(null);
+          return JSON.parse(Httpreq.responseText);
+        }
+
+        map.addListener('center_changed', function() {
+          if (updateStateEnum === UpdateStateEnum.OFF) {
+            updateStateEnum = UpdateStateEnum.FLAG_RAISE;
+            updateView(); 
+          }
+        });
+
+        map.addListener('bounds_changed', function() {
+          if (updateStateEnum === UpdateStateEnum.OFF) {
+            updateStateEnum = UpdateStateEnum.FLAG_RAISE;
+            updateView(); 
+          }
+        });
+
+        var nearby_url = 'https://maps.googleapis.com/maps/api/place/textsearch/json?query=new+york+city+point+of+interest&language=en&key=AIzaSyBWY8fwS1LqhBMdnul1rMfUU-sAPUPREhM';
+        console.log(getImageArray(getJSON(nearby_url), 20, 'AIzaSyBWY8fwS1LqhBMdnul1rMfUU-sAPUPREhM'));
+        
+        add_image_markers(places, map);
+      }
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBWY8fwS1LqhBMdnul1rMfUU-sAPUPREhM&callback=initMap">
+    </script>
+  </body>
+</html>
